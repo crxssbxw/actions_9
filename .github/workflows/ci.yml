@@ -1,0 +1,57 @@
+name: Project Build and Test
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build Classes Release
+        run: dotnet build ./Classes --configuration Release
+      - name: Build Test Release
+        run: dotnet build ./ClassesTest --configuration Release
+      - name: Build Classes Debug
+        run: dotnet build ./Classes --configuration Debug
+      - name: Build Test Debug
+        run: dotnet build ./ClassesTest --configuration Debug
+
+  test-release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test Release Configuration
+        run: dotnet test ./ClassesTest --configuration Release
+  
+  test-debug:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test Debug Configuration
+        run: dotnet test ./ClassesTest --configuration Debug
+
+  analyze:
+    needs: [test-release, test-debug]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run code analysis
+        run: dotnet tool install -g dotnet-format && dotnet format ./Classes
