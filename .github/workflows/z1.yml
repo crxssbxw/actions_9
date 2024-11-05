@@ -1,6 +1,6 @@
 name: Building and get .dll
 
-on: [pull-request]
+on: [pull_request]
 
 jobs:
   build:
