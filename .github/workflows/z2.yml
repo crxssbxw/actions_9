@@ -1,0 +1,37 @@
+name: Release Build and test with coverage
+
+on:
+  push:
+    branches:
+      - 'main'
+  
+jobs:
+  buld:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build Release
+        run: dotnet build ./Classes/Classes.csproj --configuration Release
+
+  test:
+    needs: buld
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Test Configuration
+        run: dotnet test ./ClassesTest/ClassesTest.csproj --collect:"XPlat Code Coverage"
+      - name: Get Test Coverage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code Coverage
+          path: ./ClassesTest/TestResults/
