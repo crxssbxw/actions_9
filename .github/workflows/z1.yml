@@ -1,0 +1,25 @@
+name: Building and get .dll
+
+on: [pull-request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build Configurations
+        run: dotnet build ./Classes --configuration ${{ matrix.configuration }}
+      - name: Get Release Artifact
+        uses: actions/upload-artifacts@v4
+        with:
+          name: Classes.dll ${{ matrix.configuration }}
+          path: ./Classes/bin/${{ matrix.configuration }}/Classes.dll
+
